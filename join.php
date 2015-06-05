@@ -10,7 +10,7 @@ $db->DBI();
 
 $ip=getenv("REMOTE_ADDR");
 if(PHP_OS=='WINNT'){
-	exec("arp -a", $rgResult);
+	exec("arp -a", $rgResult); // windows에서는 cmd에 everyone 권한 줘야 함
 	$mac_template="/[\d|A-F]{2}\-[\d|A-F]{2}\-[\d|A-F]{2}\-[\d|A-F]{2}\-[\d|A-F]{2}\-[\d|A-F]{2}/i"; 
 	foreach($rgResult as $key=>$value){ 
 		if(strpos($value, $ip)!==FALSE){ 
@@ -23,7 +23,7 @@ if(PHP_OS=='WINNT'){
 	$mac_template="/[\d|A-F]{2}\:[\d|A-F]{2}\:[\d|A-F]{2}\:[\d|A-F]{2}\:[\d|A-F]{2}\:[\d|A-F]{2}/i"; 
 	preg_match($mac_template, $rgResult[0], $matches); 
 } 
-$mac="55-55-55-55-55-55";#$matches[0];
+$mac=$matches[0];
 
 $db->query = "select mac_address from user where mac_address = '".$mac."'";
 $db->DBQ();
