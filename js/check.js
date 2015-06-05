@@ -16,10 +16,15 @@ function pre_sign(){
 		return false;
 	}
 	
+	if($('#major').val() == ""){
+		alert("이름을 입력 바랍니다");
+		return false;
+	}	
+	
 	$.ajax({
 		type: "POST",
 		url: "submit.php",
-		data: "id="+$('#sn').val()+"&passwd="+$('#password').val()+"&name="+$('#name').val()+"&mac="+$('#mac').val(),
+		data: "id="+$('#sn').val()+"&passwd="+$('#password').val()+"&name="+$('#name').val()+"&mac="+$('#mac').val()+"&major="+$('#major').val(),
 		cache: false,
 		success: function(data){
 			if(data == 0){
