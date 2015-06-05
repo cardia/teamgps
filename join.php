@@ -85,7 +85,7 @@ $base->content='
     </tr>
     <tr>
       <td>전공</td>
-      <td><input type='text' name='major' id='major' size='20' required /></td>
+      <td><input type="text" name="major" id="major" size="20" required /></td>
     </tr>
     <tr>
       <td>맥주소</td>
