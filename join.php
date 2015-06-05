@@ -73,7 +73,7 @@ $base->content='
   <tbody>
     <tr>
       <td>학번</td>
-      <td><input type="text" name="sn" id="sn" size="20" onkeyup="dsn(this)" required /></td>
+      <td><input type="text" maxlength="9" name="sn" id="sn" size="20" onkeyup="dsn(this)" required /></td>
     </tr>
     <tr>
       <td>비밀번호</td>
