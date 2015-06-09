@@ -37,6 +37,19 @@ if($result > 0){
 	echo "</script>";
 }
 
+function lecture_list(){
+	$db = new DBC;
+	$db->DBI();
+	$db->query = "select title,lecture_number from lecture";
+	$db->DBQ();
+	$db->DBO();
+	echo "<select id='title' name='title'>\n";
+	while($row = $db->result->fetch_assoc()){
+		echo "\t<option value='".$row[lecture_number]."'>".$row[title]."(".$row[lecture_number].")</option>\n";
+	}
+	echo "</select>\n<p/>\n";
+}
+
 $base->head='
 <script type="text/javascript" src="../js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../js/check.js"></script>';

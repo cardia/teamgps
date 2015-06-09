@@ -1,20 +1,23 @@
 <?php
-include('./admin_privilege.php');
-include('./db_conn.php');
-header("Content-Type: text/html; charset=UTF-8");
+require_once './db.php';
+require_once './admin_privilege.php';
 
-$title = $_POST['title'];
-$title = explode(',',$title);
-foreach ($title as $value){
-	mysql_query("delete from lecture where title='".$value."'");
-	mysql_query("update student_info set lecture_1 = NULL where lecture_1 = '".$value."'");
-	mysql_query("update student_info set lecture_2 = NULL where lecture_2 = '".$value."'");
-	mysql_query("update student_info set lecture_3 = NULL where lecture_3 = '".$value."'");
-	mysql_query("update student_info set lecture_4 = NULL where lecture_4 = '".$value."'");
-	mysql_query("update student_info set lecture_5 = NULL where lecture_5 = '".$value."'");
-	mysql_query("update student_info set lecture_6 = NULL where lecture_6 = '".$value."'");
+$lecture_number = $_POST['lecture_number'];
+$lecture_number = explode(',',$lecture_number);
+
+$db = new DBC;
+$db->DBI();
+
+foreach ($lecture_number as $value){
+	$db->query = "delete from lecture where lecture_number = '".$value."'";
+	$db->DBQ();
+	$db->query = "delete from lecture_check where lecture_number = '".$value."'";
+	$db->DBQ();
+	$db->query = "delete from lecture_day where lecture_number = '".$value."'";
+	$db->DBQ();
+	$db->query = "delete from lecture_user where lecture_number = '".$value."'";
+	$db->DBQ();
+	$db->DBO();
 }
-
 echo "0";
-mysql_close();
 ?>
