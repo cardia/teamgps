@@ -1,78 +1,93 @@
 <?php
-include('./admin_privilege.php');
-include('./simple_html_dom.php');
-include('./db_conn.php');
+require_once './layout.inc';
+require_once './db.php';
 
-$now = date("s",time())*1000;
-$semi = date("s",mktime(0,0,30,0,0,0)) * 1000;
-if($now - $semi != 0){
-	$now = $semi - $now;
-	if($now < 0){
-		$now = $semi-abs($now);
-	}
-}
+$base = new Layout;
+$base->link = './style.css';
+$base->title = '출석 현황 확인';
+$db = new DBC;
+$db->DBI();
 
-$html = file_get_html('http://192.168.0.1/cgi-bin/timepro.cgi?tmenu=netconf&smenu=laninfo');
+$yoil = array("일","월","화","수","목","금","토");
+$get_date = $_GET['date'];
+$user_id = $_SESSION['user_number'];
+$user_name = $_SESSION['user_name'];
+$isadmin = $_SESSION['isadmin'];
+$today = date('Y/m/d');
+$week = date('w',strtotime($get_date));
 
-echo "<table border='1'>";
-echo "<tr><td>학번</td><td>이름</td><td>수업 시작<td>수업 중간</td><td>출석결과</td></tr><tr>";
-foreach($html->find('.item_td') as $mac){
-	if(preg_match('/[0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F]/i',$mac)){
-		$mac = strip_tags($mac);
-		$query = "update chul_check set first_check = 1 where mac_address = '".$mac."'";
-		mysql_query($query);		
-		//if(date("i",time())>=29 && date("i",time())<=31){
-		if(date("s",time())>=29 && date("s",time())<=31){
-			$semi_query = "update chul_check set semi_check = 1 where mac_address = '".$mac."'";
-			mysql_query($semi_query);
-		}
-		//if(date("i",time())>=59 && date("i",time())<=01){
-		elseif(date("s",time())<=02){
-			$final_query = "update chul_check set final_check = 1 where semi_check = 1 and first_check = 1 and mac_address = '".$mac."'";
-			mysql_query($final_query);
-			$query = "update chul_check set final_check = 0 where final_check != 1";
-			mysql_query($query);
-		}
-	}
-}
-draw();
-echo "<script language='javascript'>";
-echo "window.setTimeout('window.location.reload()',".$now.");"; 
+#if($isadmin == 1){
+#	echo "<script type='text/javascript'>location.replace('./admin.html');</script>";
+#}
+echo "<script type='text/javascript'>\n";
+echo "function logout(){ \n\tlocation.replace('./login.php');\n}\n";
 echo "</script>";
 
-function draw(){
-	$query = "select student_number, student_name, first_check, semi_check, final_check from chul_check";
-	$result = mysql_query($query);
-	while($row = @mysql_fetch_array($result)){
-		echo "<td>".$row[student_number]."</td>";
-		echo "<td>".$row[student_name]."</td>";
-		switch ($row[first_check]){
-			case 0: $first_check = "미출석";break;
-			case 1: $first_check = "출석";break;
-		}
-		switch ($row[semi_check]){
-			case 0: $semi_check = "미출석";break;
-			case 1: $semi_check = "재실";
-		}
-		if(!is_null($row[final_check])){
-			switch ($row[final_check]){
-				case 0: $final_check = "결석";break;
-				case 1: $final_check = "출석";break;
-			}
-			if($row[first_check]==1 && $row[semi_check]==0){
-				$final_check = "도망";
-			}
-			elseif($row[first_check]==0 && $row[semi_check]==1){
-				$final_check = "지각";
-			}
-		}
-		else{
-			$final_check = "체크 전";
-		}
-		echo "<td>".$first_check."</td>";
-		echo "<td>".$semi_check."</td>";
-		echo "<td>".$final_check."</td></tr>";
-	}
+echo "<script type='text/javascript'>\n";
+echo "function yesterday(){ \n\tlocation.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."-1 day"))."');\n}\n";
+echo "</script>";
+echo "<script type='text/javascript'>\n";
+echo "function tomorrow(){ \n\tif(".$get_date."!=".$today.")location.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."+1 day"))."');\n}\n";
+echo "</script>";
+
+$db->query = "select lec.title, chk.check1, chk.check2, chk.check3 
+from lecture as lec, lecture_check as chk
+where chk.date ='".$get_date."' and user_number='".$user_id."' and chk.lecture_number = lec.lecture_number;";
+
+$db->DBQ();
+
+$db->DBO();
+
+$attendance = "";
+$result_num = $db->result->num_rows;
+$status_array = array("부재", "재실");
+if($result_num != 0) {
+  $i = 0;
+  while($i++ < $result_num) {
+    $data = $db->result->fetch_row();
+    $title = $data[0];
+    $chk1 = $data[1];
+    $chk2 = $data[2];
+    $chk3 = $data[3];
+    $status = ($chk1 * 4) + ($chk2 * 2) + $chk3;
+    switch ($status) {
+      case 0 : $final_chk = "결석";break;
+      case 1 : $final_chk = "지각";break;
+      case 2 : $final_chk = "도주";break;
+      case 3 : $final_chk = "지각";break;
+      case 4 : $final_chk = "도주";break;
+      case 5 : $final_chk = "외출";break;
+      case 6 : $final_chk = "도주";break;
+      case 7 : $final_chk = "출석";break;
+    }
+    $attendance = $attendance."<tr><td>".$title."</td><td>".$status_array[$chk1]."</td><td>".$status_array[$chk2]."</td><td>".$status_array[$chk3]."</td><td>".$final_chk."</tr>";
+  }
 }
-mysql_close();
+else {
+  $attendance = "<tr><th colspan=5>수업이 없는 날입니다.</th></tr>";
+}
+
+$base->AdminSide();
+$base->content="
+<table class='view' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='5' cellspacing='0' border='1' align='center' style='border-collapse:collapse; border:1px gray solid;'>
+<caption><input type='button' class='btn' name='yesterday' id='yesterday' value='<<' onclick='yesterday()'/>&nbsp; &nbsp; ".$get_date."일 (".$yoil[$week].")&nbsp; &nbsp; <input type='button' class='btn' name='tomorrow' id='tomorrow' value='>>' onclick='tomorrow()'/></caption>
+<caption><br /><p><b>".$user_name."(".$user_id.")님 출석 현황</b></p></caption>
+<thead>
+  <tr>  
+    <th id='name'>과목</th>
+    <th id='semi1'>수업 시작</th>
+    <th id='semi2'>중간 결과</th>
+    <th id='semi3'>중간 결과</th>
+    <th id='final'>출석 결과</th>
+  </tr>
+</thead>
+<tfoot>
+</tfoot>
+<tbody>
+".$attendance."
+</tbody>
+</table>
+<center><br /><br /><input type='button' class='btn' name='logout' id='logout' value='logout' onclick='logout()'/></center>";
+
+$base->LayoutMain();
 ?>
