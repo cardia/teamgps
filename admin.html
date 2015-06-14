@@ -11,16 +11,18 @@ function logout(){
 }
 
 $base->title = '관리자 모드';
-$base->side='
-<table class="nav">
-	<a href="./admin_view.php">출석 현황</a><p/>
-	<a href="./lecture_add.php">과목 추가</a><p/>
-	<a href="./lecture_delete.php">과목 삭제</a><p/>
-	<a href="./index.php" target="_top" onclick="logout()">로그 아웃</a>
-</table>';
+$base->AdminSide();
 $base->content="
-<table class='admin_view' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='5' cellspacing='0' border='1' align='center' style='border-collapse:collapse; border:1px gray solid;'>
-	
+<table class='admin_view' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='5' cellspacing='0' align='center' style='border-collapse:collapse; border:1px gray solid;'>
+	<tr>
+    <td><h1>관리자 페이지</h1></td>
+  </tr>
+  <tr>
+    <td>월별 출석 보기</td>
+  </tr>
+  <tr>
+    <td>과목별 출석 보기</td>
+	</tr>
 </table>";
 
 $base->LayoutMain();

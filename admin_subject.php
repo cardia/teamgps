@@ -11,7 +11,7 @@ if($now - $semi != 0){
 		$now = $semi-abs($now);
 	}
 }
-	
+
 $html = file_get_html('http://192.168.0.1/cgi-bin/timepro.cgi?tmenu=netconf&smenu=laninfo');
 
 echo "<table border='1'>";
