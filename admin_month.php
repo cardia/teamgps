@@ -9,20 +9,20 @@ $db = new DBC;
 $db->DBI();
 
 $yoil = array("일","월","화","수","목","금","토");
-$get_date = $_GET['date'];
-$user_id = $_SESSION['user_number'];
-$user_name = $_SESSION['user_name'];
-$isadmin = $_SESSION['isadmin'];
+$lecture_id = $_GET['lecture_id'];
 $today = date('Y/m/d');
 $week = date('w',strtotime($get_date));
 
-#if($isadmin == 1){
-#	echo "<script type='text/javascript'>location.replace('./admin.html');</script>";
-#}
 echo "<script type='text/javascript'>\n";
-echo "function logout(){ \n\tlocation.replace('./login.php');\n}\n";
+echo "function logout(){ \n\tlocation.replace('./logout.php');\n}\n";
 echo "</script>";
 
+echo "<script type='text/javascript'>\n";
+echo "function monthago(){ \n\tlocation.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."-1 month"))."');\n}\n";
+echo "</script>";
+echo "<script type='text/javascript'>\n";
+echo "function aftermonth(){ \n\tvar d1 = new Date(".strtotime($get_date."+1 month").");\nvar d2 = new Date(".strtotime($today).");\nif(d1 <= d2)location.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."+1 month"))."');\n}\n";
+echo "</script>";
 echo "<script type='text/javascript'>\n";
 echo "function yesterday(){ \n\tlocation.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."-1 day"))."');\n}\n";
 echo "</script>";
@@ -39,8 +39,8 @@ $db->DBQ();
 $db->DBO();
 
 $attendance = "";
-$result_num = $db->result->num_rows;
 $status_array = array("부재", "재실");
+$result_num = $db->result->num_rows;
 if($result_num != 0) {
   $i = 0;
   while($i++ < $result_num) {
@@ -67,10 +67,15 @@ else {
   $attendance = "<tr><th colspan=5>수업이 없는 날입니다.</th></tr>";
 }
 
-$base->AdminSide();
 $base->content="
 <table class='view' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='5' cellspacing='0' border='1' align='center' style='border-collapse:collapse; border:1px gray solid;'>
-<caption><input type='button' class='btn' name='yesterday' id='yesterday' value='<<' onclick='yesterday()'/>&nbsp; &nbsp; ".$get_date."일 (".$yoil[$week].")&nbsp; &nbsp; <input type='button' class='btn' name='tomorrow' id='tomorrow' value='>>' onclick='tomorrow()'/></caption>
+<caption>
+  <input type='button' class='btn' name='monthago' id='monthago' value='<<' onclick='monthago()'/>
+  <input type='button' class='btn' name='yesterday' id='yesterday' value='<' onclick='yesterday()'/>
+  &nbsp; &nbsp; ".$get_date."일 (".$yoil[$week].")&nbsp; &nbsp; 
+  <input type='button' class='btn' name='tomorrow' id='tomorrow' value='>' onclick='tomorrow()'/>
+  <input type='button' class='btn' name='aftermonth' id='aftermonth' value='>>' onclick='aftermonth()'/>
+</caption>
 <caption><br /><p><b>".$user_name."(".$user_id.")님 출석 현황</b></p></caption>
 <thead>
   <tr>  
