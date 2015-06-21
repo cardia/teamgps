@@ -21,7 +21,7 @@ $lecture_list = $lecture_list."</select>\n<p/>\n";
 $db->query = "select user_number,user_name from user";
 $db->DBQ();
 $db->DBO();
-$student_list = "<table border='1'>\n";
+$student_list = "<table class='admin_view' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='5' cellspacing='0' align='center' style='border-collapse:collapse; border:1px gray solid;'>\n";
 $student_list = $student_list."\t<tr>\n\t\t<td></td>\n\t\t<td>학번</td>\n\t\t<td>이름</td>\n\t</tr>\n";
 while($row = $db->result->fetch_assoc()){
   $student_list = $student_list."\t<tr>\n\t\t<td><input type='checkbox' name='checkbox[]' id='checkbox[]' value='".$row[user_number]."'></td>\n";
@@ -74,14 +74,14 @@ for($i=1; $i <= $total_week; $i++){
 $day_list = $day_list."</table>";
 
 echo '<script type="text/javascript" src="../js/jquery-2.1.3.min.js"></script>';
-echo '<script type="text/javascript" src="./js/lecture.js"></script>';
+echo '<script type="text/javascript" src="../js/lecture.js"></script>';
 
 $base->AdminSide();
-$base->content = '
+$base->content = '<center>
 과목 현황 : '.$lecture_list.'
 과목 번호 : <input type="text" name="lecture_number" id="lecture_number" required />
-과목 명 : <input type="text" name="lecture_title" id="lecture_title" required /><p/>
-<table width="500" cellpadding="0" cellspacing="1" bgcolor="#999999">
+과목 명 : <input type="text" name="lecture_title" id="lecture_title" required /><p/></center>
+<table width="500" cellpadding="0" cellspacing="1" bgcolor="#999999" align="center">
 	<caption>강의 요일</caption>
 	<tr>
 		<td height="50" align="center" bgcolor="#FFFFFF" colspan="7">2015년 6월</td>
@@ -97,12 +97,14 @@ $base->content = '
 	</tr>
 	'.$day_list.'
 <p/>
+<center>
 시작 시간 : <input type="time" name="s_time" id="s_time" value="09:00:00" required />
 강의 시간 : <input type="text" name="e_time" id="e_time" required /><p/>
 <input type="button" name="submit" id="submit" value="과목추가" onclick="update_lecture()"/><p/>
 '.$student_list.'
 <p/>
-<input type="button" name="update" id="update" value="학생추가" onclick="update_student()"/>';
+<input type="button" name="update" id="update" value="학생추가" onclick="update_student()"/>
+</center>';
 
 $base->LayoutMain();
 ?>
