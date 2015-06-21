@@ -24,25 +24,32 @@ $query2.="'".$lecture_number."')";
 $query = $query1.$query2;
 $db->query = $query;
 $db->DBQ();
-$db->query = "insert into lecture values(".$lecture_number.",'".$lecture_title."',".$e_time.")";
-$db->DBQ();
+$db->DBO();
+$db2 = new DBC;
+$db2->DBI();
+$db2->query = "insert into lecture values(".$lecture_number.",'".$lecture_title."',".$e_time.")";
+$db2->DBQ();
 if($lecture_day[1]-$lecture_day[0]>=6){
+	$db3 = new DBC;
+	$db3->DBI();
 	$took_time = 1;
 	$day=date("D",mktime(0,0,0,$month,$lecture_day[0],2015));
-	$db->query = "insert into lecture_time values('".$lecture_title."','".$day."',".$s_time.",".$took_time.")";
+	$db3->query = "insert into lecture_time values('".$lecture_title."','".$day."',".$s_time.",".$took_time.")";
 	echo "insert into lecture_time values('".$lecture_title."','".$day."',".$s_time.",".$took_time.")";
-	$db->DBQ();
-	$db->DBO();
+	$db3->DBQ();
+	$db3->DBO();
 }
 else{
+	$db3 = new DBC;
+	$db3->DBI();
 	$took_time = 2;
 	$day1=date("D",mktime(0,0,0,$month,$lecture_day[0],2015));
 	$day2=date("D",mktime(0,0,0,$month,$lecture_day[1],2015));
-	$db->query = "insert into lecture_time values('".$lecture_title."','".$day1."',".$s_time.",".$took_time.")";
-	$db->DBQ();
-	$db->query = "insert into lecture_time values('".$lecture_title."','".$day2."',".$s_time.",".$took_time.")";
-	$db->DBQ();
-	$db->DBO();
+	$db3->query = "insert into lecture_time values('".$lecture_title."','".$day1."',".$s_time.",".$took_time.")";
+	$db3->DBQ();
+	$db3->query = "insert into lecture_time values('".$lecture_title."','".$day2."',".$s_time.",".$took_time.")";
+	$db3->DBQ();
+	$db3->DBO();
 }
 echo "0";
 ?>
