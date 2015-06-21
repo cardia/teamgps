@@ -136,10 +136,10 @@ class Layout
     $this->side='<table class="nav" style="margin:5 auto; margin-left:10%; width="90%"">
     <caption><h1>관리자 메뉴</h1></caption>
       <tr>
-        <td><a href="./admin_month.php">월별 출석 현황</a><p/></td>
+        <td><a href="./admin_subject_choice.php?type=month">월별 출석 현황</a><p/></td>
       </tr>
       <tr>
-        <td><a href="./admin_subject.php">과목별 출석 현황</a><p/></td>
+        <td><a href="./admin_subject_choice.php?type=day">일별 출석 현황</a><p/></td>
       </tr>
       <tr>
         <td><a href="./lecture_add.php">과목 추가</a><p/></td>
@@ -148,7 +148,7 @@ class Layout
         <td><a href="./lecture_delete.php">과목 삭제</a><p/></td>
       </tr>
       <tr>
-        <td><a href="./index.php" target="_top" onclick="logout()">로그 아웃</a></td>
+        <td><a href="./logout.php">로그 아웃</a></td>
       </tr>
     </table>';
   }
