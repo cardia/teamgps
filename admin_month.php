@@ -8,9 +8,13 @@ $base->title = '출석 현황 확인';
 $db = new DBC;
 $db->DBI();
 
-$yoil = array("일","월","화","수","목","금","토");
 $lecture_id = $_GET['lecture_id'];
-$today = date('Y/m/d');
+$get_date = $_GET['date'];
+$month = date('m', strtotime($get_date));
+$year = date('Y', strtotime($get_date));
+$first_day = $year.'/'.$month.'/01';
+$last_day = $year.'/'.$month.'/'.date('t', mktime(0,0,1,$month,1,$year));
+$today = date('Y/m');
 $week = date('w',strtotime($get_date));
 
 echo "<script type='text/javascript'>\n";
@@ -18,37 +22,37 @@ echo "function logout(){ \n\tlocation.replace('./logout.php');\n}\n";
 echo "</script>";
 
 echo "<script type='text/javascript'>\n";
-echo "function monthago(){ \n\tlocation.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."-1 month"))."');\n}\n";
+echo "function lastyear(){ \n\tlocation.replace('./admin_month.php?lecture_id=".$lecture_id."&date=".date("Y/m/d", strtotime($get_date."-1 year"))."');\n}\n";
 echo "</script>";
 echo "<script type='text/javascript'>\n";
-echo "function aftermonth(){ \n\tvar d1 = new Date(".strtotime($get_date."+1 month").");\nvar d2 = new Date(".strtotime($today).");\nif(d1 <= d2)location.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."+1 month"))."');\n}\n";
+echo "function nextyear(){ \n\tvar d1 = new Date(".strtotime($get_date."+1 month").");\nvar d2 = new Date(".strtotime($today).");\nif(d1 <= d2)location.replace('./admin_month.php?lecture_id=".$lecture_id."&date=".date("Y/m/d", strtotime($get_date."+1 year"))."');\n}\n";
 echo "</script>";
 echo "<script type='text/javascript'>\n";
-echo "function yesterday(){ \n\tlocation.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."-1 day"))."');\n}\n";
+echo "function lastmonth(){ \n\tlocation.replace('./admin_month.php?lecture_id=".$lecture_id."&date=".date("Y/m/d", strtotime($get_date."-1 month"))."');\n}\n";
 echo "</script>";
 echo "<script type='text/javascript'>\n";
-echo "function tomorrow(){ \n\tif(".$get_date."!=".$today.")location.replace('./view.php?date=".date("Y/m/d", strtotime($get_date."+1 day"))."');\n}\n";
+echo "function aftermonth(){ \n\tif(".$get_date."!=".$today.")location.replace('./admin_month.php?lecture_id=".$lecture_id."&date=".date("Y/m/d", strtotime($get_date."+1 day"))."');\n}\n";
 echo "</script>";
 
-$db->query = "select lec.title, chk.check1, chk.check2, chk.check3 
-from lecture as lec, lecture_check as chk
-where chk.date ='".$get_date."' and user_number='".$user_id."' and chk.lecture_number = lec.lecture_number;";
-
+$db->query = "select chk.date, user.user_name, chk.check1, chk.check2, chk.check3 
+from user as user, lecture_check as chk
+where (chk.date >='".$first_day."'and chk.date <= '".$last_day."') and lecture_number='".$lecture_id."' and chk.user_number = user.user_number;";
 $db->DBQ();
-
 $db->DBO();
 
 $attendance = "";
 $status_array = array("부재", "재실");
 $result_num = $db->result->num_rows;
+echo $result_num;
 if($result_num != 0) {
   $i = 0;
   while($i++ < $result_num) {
     $data = $db->result->fetch_row();
-    $title = $data[0];
-    $chk1 = $data[1];
-    $chk2 = $data[2];
-    $chk3 = $data[3];
+    $date = $data[0];
+    $student = $data[1];
+    $chk1 = $data[2];
+    $chk2 = $data[3];
+    $chk3 = $data[4];
     $status = ($chk1 * 4) + ($chk2 * 2) + $chk3;
     switch ($status) {
       case 0 : $final_chk = "결석";break;
@@ -60,26 +64,28 @@ if($result_num != 0) {
       case 6 : $final_chk = "도주";break;
       case 7 : $final_chk = "출석";break;
     }
-    $attendance = $attendance."<tr><td>".$title."</td><td>".$status_array[$chk1]."</td><td>".$status_array[$chk2]."</td><td>".$status_array[$chk3]."</td><td>".$final_chk."</tr>";
+    $attendance = $attendance."<tr><td>".$date."</td><td>".$student."</td><td>".$status_array[$chk1]."</td><td>".$status_array[$chk2]."</td><td>".$status_array[$chk3]."</td><td>".$final_chk."</tr>";
   }
 }
 else {
-  $attendance = "<tr><th colspan=5>수업이 없는 날입니다.</th></tr>";
+  $attendance = "<tr><th colspan=6>수업이 없는 날입니다.</th></tr>";
 }
 
+$base->AdminSide();
 $base->content="
-<table class='view' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='5' cellspacing='0' border='1' align='center' style='border-collapse:collapse; border:1px gray solid;'>
+<table class='admin_month' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='6' cellspacing='0' border='1' align='center' style='border-collapse:collapse; border:1px gray solid;'>
 <caption>
-  <input type='button' class='btn' name='monthago' id='monthago' value='<<' onclick='monthago()'/>
-  <input type='button' class='btn' name='yesterday' id='yesterday' value='<' onclick='yesterday()'/>
-  &nbsp; &nbsp; ".$get_date."일 (".$yoil[$week].")&nbsp; &nbsp; 
-  <input type='button' class='btn' name='tomorrow' id='tomorrow' value='>' onclick='tomorrow()'/>
-  <input type='button' class='btn' name='aftermonth' id='aftermonth' value='>>' onclick='aftermonth()'/>
+  <input type='button' class='btn' name='lastyear' id='lastyear' value='<<' onclick='lastyear()'/>
+  <input type='button' class='btn' name='lastmonth' id='lastmonth' value='<' onclick='lastmonth()'/>
+  &nbsp; &nbsp; ".$year."년 ".$month."월&nbsp; &nbsp; 
+  <input type='button' class='btn' name='aftermonth' id='aftermonth' value='>' onclick='aftermonth()'/>
+  <input type='button' class='btn' name='nextyear' id='nextyear' value='>>' onclick='nextyear()'/>
+  <br /><p></p>
 </caption>
-<caption><br /><p><b>".$user_name."(".$user_id.")님 출석 현황</b></p></caption>
 <thead>
-  <tr>  
-    <th id='name'>과목</th>
+  <tr>
+    <th id='date'>날짜</th>
+    <th id='student'>학생</th>
     <th id='semi1'>수업 시작</th>
     <th id='semi2'>중간 결과</th>
     <th id='semi3'>중간 결과</th>
