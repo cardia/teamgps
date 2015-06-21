@@ -22,6 +22,7 @@ class Layout
 		echo $this->ThisBoard(); // 현재 게시판의 이름을 확인
 		echo "<!DOCTYPE html>\n<html lang='ko'>";
 		echo "<head>\n<meta charset='utf-8'/>";
+		echo "<script language='javascript'> window.setTimeout('window.location.reload()',3600000)</script>";
 		echo "<title>".$this->title."</title>";
 		echo $this->head;
 		echo $this->LayoutStyle(); // 스타일을 레이아웃에 추가.
