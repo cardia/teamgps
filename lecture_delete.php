@@ -25,7 +25,7 @@ $subjects = $subjects."</table>\n";
 
 
 echo '<script type="text/javascript" src="../js/jquery-2.1.3.min.js"></script>';
-echo '<script type="text/javascript" src="./js/lecture.js"></script>';
+echo '<script type="text/javascript" src="../js/lecture.js"></script>';
 
 $base->AdminSide();
 $base->content = $subjects.'<p/>
