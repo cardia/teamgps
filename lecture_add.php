@@ -15,14 +15,13 @@ function lecture_list(){
 	echo "</select>\n<p/>\n";
 }
 
-/*function student_list(){
+function student_list(){
 	$db = new DBC;
 	$db->DBI();
-	$db->query = "select u.user_number, u.user_name l.title from user as u, lecture as l";
+	$db->query = "select user_number,user_name from user";
 	$db->DBQ();
 	$db->DBO();
 	echo "<table border='1'>\n";
-	//echo "\t<tr>\n\t\t<td></td>\n\t\t<td>학번</td>\n\t\t<td>이름</td>\n\t\t<td>과목1</td>\n\t\t<td>과목2</td>\n\t\t<td>과목3</td>\n\t\t<td>과목4</td>\n\t\t<td>과목5</td>\n\t\t<td>과목6</td>\n\t</tr>\n";
 	echo "\t<tr>\n\t\t<td></td>\n\t\t<td>학번</td>\n\t\t<td>이름</td>\n\t</tr>\n";
 	while($row = $db->result->fetch_assoc()){
 		echo "\t<tr>\n\t\t<td><input type='checkbox' name='checkbox[]' id='checkbox[]' value='".$row[user_number]."'></td>\n";
@@ -30,7 +29,7 @@ function lecture_list(){
 		echo "\t\t<td>".$row[user_name]."</td>\n\t</tr>\n";
 	}
 	echo "</table>\n";
-}*/
+}
 function day_list(){
 	$last_day = date("t", mktime(0,0,0,6,1,2015));
 	$start_week = date("w", strtotime(date("Y-m")."-01"));
@@ -145,8 +144,8 @@ function update_student(){
 시작 시간 : <input type="time" name="s_time" id="s_time" value="09:00:00" required />
 강의 시간 : <input type="text" name="e_time" id="e_time" required /><p/>
 <input type="button" name="submit" id="submit" value="과목추가" onclick="update_lecture()"/><p/>
-<?//student_list()?>
+<?student_list()?>
 <p/>
-<!--<input type="button" name="update" id="update" value="학생추가" onclick="update_student()"/>-->
+<input type="button" name="update" id="update" value="학생추가" onclick="update_student()"/>
 </body>
 </html>
