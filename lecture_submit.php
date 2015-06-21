@@ -9,7 +9,7 @@ $s_time = $_POST['s_time'];
 $e_time = $_POST['e_time'];
 $lecture_day = $_POST['lecture_day'];
 $lecture_day = explode(',',$lecture_day);
-
+$s_time = substr($s_time,0,2);
 $db = new DBC;
 $db->DBI();
 
@@ -30,6 +30,7 @@ if($lecture_day[1]-$lecture_day[0]>=6){
 	$took_time = 1;
 	$day=date("D",mktime(0,0,0,$month,$lecture_day[0],2015));
 	$db->query = "insert into lecture_time values('".$lecture_title."','".$day."',".$s_time.",".$took_time.")";
+	echo "insert into lecture_time values('".$lecture_title."','".$day."',".$s_time.",".$took_time.")";
 	$db->DBQ();
 	$db->DBO();
 }
