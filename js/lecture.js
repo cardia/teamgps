@@ -41,7 +41,7 @@ function update_student(){
 
 function delete_lecture(){
 	var checked = []
-	$("input[name="lecture_number[]"]:checked").each(function (){
+	$("input[name='lecture_number[]']:checked").each(function (){
 		checked.push($(this).val());
 	});
 	$.ajax({
