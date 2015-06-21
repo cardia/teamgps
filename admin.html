@@ -10,7 +10,90 @@ function logout(){
 	session_destroy();
 	location.replace('./index.php');
 }
-
+$html = file_get_html('http://192.168.0.1/cgi-bin/timepro.cgi?tmenu=netconf&smenu=laninfo');
+$day = date("D",time());
+$hour = date("g",time());
+$second = date("s",time());
+$min = date("i",time());
+$date = date("Y-m-d",time());
+foreach($html->find('.item_td') as $mac){
+	if(preg_match('/[0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F]/i',$mac)){
+		$mac = strip_tags($mac);
+		if($min <02){
+			$db = new DBC;
+			$db->DBI();
+			$db->query = "select user_number from user where mac_address='".$mac."'";
+			$db->DBQ();
+			$number =="";
+			while($user_number = $db->result->fetch_assoc()){
+				$number = $user_number[user_number];
+			}
+			$db->DBO();
+			$db2 = new DBC;
+			$db2->DBI();
+			$db2->query = "select lecture_number from lecture_user where user_number='".$number."'";
+			$db2->DBQ();
+			while($row = $db2->result->fetch_assoc()){
+				$db3 = new DBC;
+				$db3->DBI();			
+				$db3->query = "select lecture_number from lecture where title in (select lecture from lecture_time where day = '".$day."' and start_time = ".$hour.")";
+				$db3->DBQ();
+				if($db3->result->num_rows==0){
+					$hour1 = date("g",time()) - 1;
+					$flag = 1;
+					$db3->query = "select lecture_number from lecture where title in (select lecture from lecture_time where day = '".$day."' and start_time = ".$hour1.")";
+					$db3->DBQ();
+				}
+				while($list = $db3->result->fetch_assoc()){
+					if($row[lecture_number] == $list[lecture_number]){
+						$db4 = new DBC;
+						$db4->DBI();
+						switch($flag){
+							case 1:$db4->query = "update lecture_check set check2=1 where user_number ='".$number."'";break;
+							default :$db4->query = "insert into lecture_check(user_number,lecture_number,date,check1) values(".$number.",'".$list[lecture_number]."','".$date."',1)";
+						}
+						$db4->DBQ();
+						$db4->DBO();
+					}
+				}
+			}
+			$number="";
+		}
+		$hour2 = date("g",time()) - 2;
+		if($hour2 == 9 || $hour2 == 11 || $hour2 == 16 || $hour2 == 18){
+			if($min <02){
+				$db7 = new DBC;
+				$db7->DBI();
+				$db7->query = "select user_number from user where mac_address='".$mac."'";
+				$db7->DBQ();
+				$number1 =="";
+				while($user_number = $db7->result->fetch_assoc()){
+					$number1 = $user_number[user_number];
+				}
+				$db7->DBO();
+				$db1 = new DBC;
+				$db1->DBI();
+				$db1->query = "select lecture_number from lecture_user where user_number='".$number1."'";
+				$db1->DBQ();
+				while($row = $db1->result->fetch_assoc()){
+					$db5 = new DBC;
+					$db5->DBI();
+					$db5->query = "select lecture_number from lecture where title in (select lecture from lecture_time where day = '".$day."' and start_time = ".$hour2.")";
+					$db5->DBQ();
+					while($list = $db5->result->fetch_assoc()){
+						if($row[lecture_number] == $list[lecture_number]){
+							$db6 = new DBC;
+							$db6->DBI();
+							$db6->query = "update lecture_check set check3=1 where user_number ='".$number1."' and check2=1 and check1=1";
+							$db6->DBQ();
+							$db6->DBO();
+						}
+					}
+				}
+			}
+		}
+	}
+}
 $base->title = '관리자 모드';
 $base->AdminSide();
 $base->content="
