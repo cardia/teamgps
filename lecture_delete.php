@@ -5,17 +5,17 @@ require_once './admin_privilege.php';
 function lecture_list(){
 	$db = new DBC;
 	$db->DBI();
-	$db->query = "select * from lecture";
+	$db->query = "select lecture.lecture_number as lecture_number, lecture.title as title, lecture_time.took_time as took_time from lecture,lecture_time group by lecture_number";
 	$db->DBQ();
 	$db->DBO();
 	echo "<table border='1'>\n";
-	echo "\t<tr>\n\t\t<td></td>\n\t\t<td>과목명</td>\n\t\t<td>시작시간</td>\n\t\t<td>강의 시간</td>\n\t\t<td>주 강의 횟수</td>\n\t</tr>\n";
+	echo "\t<tr>\n\t\t<td></td>\n\t\t<td>과목명</td>\n\t\t<td>강의 시간</td>\n\t</tr>\n";
 	while($row = $db->result->fetch_assoc()){
 		echo "\t<tr>\n\t\t<td><input type='checkbox' name='lecture_number[]' id='lecture_number[]' value='".$row[lecture_number]."'></td>";
 		echo "\n\t\t<td>".$row[title]."</td>";
-		echo "\n\t\t<td>".$row[s_time]."</td>";
-		echo "\n\t\t<td>".$row[take_time]."</td>";
-		echo "\n\t\t<td>".$row[weekly_time]."</td>\n\t</tr>\n";
+		//echo "\n\t\t<td>".$row[start_time]."</td>";
+		//echo "\n\t\t<td>".$row[take_time]."</td>";
+		echo "\n\t\t<td>".$row[took_time]."</td>\n\t</tr>\n";
 	}
 	echo "</table>\n";
 }

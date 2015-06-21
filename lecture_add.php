@@ -147,6 +147,6 @@ function update_student(){
 <input type="button" name="submit" id="submit" value="과목추가" onclick="update_lecture()"/><p/>
 <?//student_list()?>
 <p/>
-<input type="button" name="update" id="update" value="학생추가" onclick="update_student()"/>
+<!--<input type="button" name="update" id="update" value="학생추가" onclick="update_student()"/>-->
 </body>
 </html>
