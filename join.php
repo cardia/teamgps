@@ -33,7 +33,7 @@ $result = $db->result->num_rows;
 if($result > 0){
 	echo "<script type='text/javascript'>";
 	echo "alert('본 기기의 맥주소는 이미 등록 되어 있습니다 다른 기기로 등록 바랍니다');";
-	echo "location.replace('./welcome.php');";
+	echo "location.replace('./index.php');";
 	echo "</script>";
 }
 
