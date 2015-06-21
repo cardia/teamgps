@@ -17,6 +17,8 @@ foreach ($lecture_number as $value){
 	$db->DBQ();
 	$db->query = "delete from lecture_user where lecture_number = '".$value."'";
 	$db->DBQ();
+	$db->query = "delete from lecture_time where lecture_number = '".$value."'";
+	$db->DBQ();
 	$db->DBO();
 }
 echo "0";
