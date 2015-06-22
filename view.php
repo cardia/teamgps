@@ -5,8 +5,6 @@ require_once './db.php';
 $base = new Layout;
 $base->link = './style.css';
 $base->title = '출석 현황 확인';
-$db = new DBC;
-$db->DBI();
 
 $yoil = array("일","월","화","수","목","금","토");
 $get_date = $_GET['date'];
@@ -16,6 +14,16 @@ $isadmin = $_SESSION['isadmin'];
 $today = date('Y/m/d');
 $week = date('w',strtotime($get_date));
 
+$db1 = new DBC;
+$db1->DBI();
+$db1->query = "select start_time from lecture_time where lecture in (select title from lecture where lecture_number=".$lecture_id.")";
+$db1->DBQ();
+while($row = $db1->result->fetch_assoc()){
+$hour = $row[start_time];
+}
+$db1->DBO();
+$db = new DBC;
+$db->DBI();
 if($isadmin == 1){
 	echo "<script type='text/javascript'>location.replace('./admin.html');</script>";
 }
@@ -65,6 +73,9 @@ if($result_num != 0) {
       case 5 : $final_chk = "외출";break;
       case 6 : $final_chk = "도주";break;
       case 7 : $final_chk = "출석";break;
+    }
+    if(date("G",time()) < $hour+2){
+	$final_chk = "수업중";
     }
     $attendance = $attendance."<tr><td>".$title."</td><td>".$status_array[$chk1]."</td><td>".$status_array[$chk2]."</td><td>".$status_array[$chk3]."</td><td>".$final_chk."</tr>";
   }

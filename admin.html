@@ -10,16 +10,28 @@ function logout(){
 	session_destroy();
 	location.replace('./index.php');
 }
+$now = date("i",time());
+$semi = date("i",mktime(0,59,0,0,0,0));
+if($now - $semi != 0){
+	$now = $semi - $now;
+	if($now < 0){
+		$now = $semi-abs($now);
+	}
+}
+$now = $now * 1000 *60;
 $html = file_get_html('http://192.168.0.1/cgi-bin/timepro.cgi?tmenu=netconf&smenu=laninfo');
 $day = date("D",time());
-$hour = date("g",time());
+$hour = date("G",time());
 $second = date("s",time());
 $min = date("i",time());
 $date = date("Y-m-d",time());
 foreach($html->find('.item_td') as $mac){
 	if(preg_match('/[0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F][:\-][0-9a-fA-F][0-9a-fA-F]/i',$mac)){
 		$mac = strip_tags($mac);
-		if($min <02){
+		if($min <02 || $min > 58){
+			if($min > 58){
+				$hour = $hour = date("G",time()) + 1;
+			}
 			$db = new DBC;
 			$db->DBI();
 			$db->query = "select user_number from user where mac_address='".$mac."'";
@@ -39,7 +51,7 @@ foreach($html->find('.item_td') as $mac){
 				$db3->query = "select lecture_number from lecture where title in (select lecture from lecture_time where day = '".$day."' and start_time = ".$hour.")";
 				$db3->DBQ();
 				if($db3->result->num_rows==0){
-					$hour1 = date("g",time()) - 1;
+					$hour1 = $hour - 1;
 					$flag = 1;
 					$db3->query = "select lecture_number from lecture where title in (select lecture from lecture_time where day = '".$day."' and start_time = ".$hour1.")";
 					$db3->DBQ();
@@ -59,7 +71,7 @@ foreach($html->find('.item_td') as $mac){
 			}
 			$number="";
 		}
-		$hour2 = date("g",time()) - 2;
+		$hour2 = $hour - 2;
 		if($hour2 == 9 || $hour2 == 11 || $hour2 == 16 || $hour2 == 18){
 			if($min <02){
 				$db7 = new DBC;
@@ -97,6 +109,7 @@ foreach($html->find('.item_td') as $mac){
 $base->title = '관리자 모드';
 $base->AdminSide();
 $base->content="
+<script language='javascript'> window.setTimeout('window.location.reload()',".$now.")</script>
 <table class='admin_view' style='margin:1 auto; margin-top:5%; width='90%' cellpadding='5' cellspacing='0' align='center' style='border-collapse:collapse; border:1px gray solid;'>
 	<tr>
     <td><h1>관리자 페이지</h1></td>
